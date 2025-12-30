@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Zwischenzeugnisgenerator Klasse 9 und 10</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; }
+h1 { text-align: center; margin: 20px 0 5px; }
+h2 { text-align: center; font-size: 0.9em; font-weight: normal; color: #555; margin-bottom: 25px; }
+
+.container { display: flex; justify-content: center; gap: 70px; padding: 20px; }
+.left, .right { width: 35%; }
+
+.block-header { font-weight: bold; font-size: 1.15em; cursor: pointer; margin-bottom: 6px; }
+.block-content { border-left: 3px solid #ccc; padding-left: 12px; margin-bottom: 25px; }
+
+select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
+
+.add-button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+
+#output { height: 330px; padding: 10px; border: 1px solid #aaa; background: #f9f9f9; }
+
+.button-row { display: flex; gap: 10px; }
+.copy-btn { background-color: #7EC8E3; color: white; border: none; }
+.delete-btn { background-color: #E74C3C; color: white; border: none; }
+
+/* pulsieren */
+.pulse {
+  animation: pulseAnim 0.25s ease-in-out;
+}
+
+@keyframes pulseAnim {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+<meta charset="UTF-8">
+<title>Zeugnisgenerator</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS PWA Support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Zeugnisgenerator">
+<link rel="apple-touch-icon" href="icon.png">
+
+<!-- iOS SAFARI FIX -->
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
+
+               select {
+                 -webkit-appearance: menulist;
+                 appearance: menulist;
+                 font-size: 16px; /* iOS Fix: verhindert Zoom */
+               }
+
+               block-content {
+                 max-height: 0;
+                 overflow: hidden;
+                 transition: max-height 0.25s ease;
+               }
+
+               .block-content.active {
+                 max-height: 2000px; /* groß genug */
+               }
+
+</style>
+</head>
+<body>
+
+<h1>Zwischenzeugnisgenerator = Verben alle im Präsens</h1>
+<h2>created & engineered mostly by ChatGPT and ideas came from Mr Pre from RSNEC</h2>
+
+<div style="text-align:center; margin-bottom:25px;">
+  <button id="resetAllBtn" onclick="pulseButton(this); confirmReset()"
+    style="
+      width:360px;
+      height:90px;
+      background-color:#8e44ad;
+      color:white;
+      font-weight:bold;
+      font-size:1.1em;
+      border:none;
+      cursor:pointer;
+    ">
+    Neuer Schüler
+  </button>
+</div>
+
+<div class="container">
+<div class="left">
+
+<!-- ================= BLOCK 1 ================= -->
+<div class="block-header" onclick="toggleBlock('b1','s1')"><span id="s1">−</span> 1. Wesen und Aufmerksamkeit</div>
+<div class="block-content" id="b1">
+<label>Vorname:</label><input id="studentName">
+<label>Geschlecht:</label>
+<select id="gender">
+  <option value="m">männlich</option>
+  <option value="w">weiblich</option>
+</select>
+<label>Anzahl Adjektive:</label>
+<select id="adjCount1" onchange="buildAdjBlock1()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
+<div id="adjBox1"></div>
+<label>Aufmerksamkeit:</label>
+<select id="attention">
+  <option value="den Unterricht besucht">den Unterricht besucht</option>
+  <option value="dem Unterricht beiwohnt">dem Unterricht beiwohnt</option>
+  <option value="dem Unterricht folgt">dem Unterricht folgt</option>
+  <option value="dem Unterricht aufmerksam folgt">dem Unterricht aufmerksam folgt</option>
+  <option value="dem Unterricht immer aufmerksam folgt">dem Unterricht immer aufmerksam folgt</option>
+  <option value="dem Unterricht meist aufmerksam folgt">dem Unterricht meist aufmerksam folgt</option>
+  <option value="dem Unterricht nicht immer aufmerksam folgt">dem Unterricht nicht immer aufmerksam folgt</option>
+  <option value="dem Unterricht konzentriert folgt">dem Unterricht konzentriert folgt</option>
+  <option value="dem Unterricht immer konzentriert folgt">dem Unterricht immer konzentriert folgt</option>
+  <option value="dem Unterricht meist konzentriert folgt">dem Unterricht meist konzentriert folgt</option>
+  <option value="dem Unterricht nicht immer konzentriert folgt">dem Unterricht nicht immer konzentriert folgt</option>
+</select>
+<button class="add-button" onclick="pulseButton(this); gen1()">Text hinzufügen</button>
+
+</div>
+
+<!-- ================= BLOCK 2 ================= -->
+<div class="block-header" onclick="toggleBlock('b2','s2')"><span id="s2">+</span> 2. Mitarbeit</div>
+<div class="block-content" id="b2" style="display:none;">
+<label>Beteiligung:</label>
+<select id="mitForm">
+  <option value="">keine Angabe</option>
+  <option>beteiligt sich</option>
+  <option>beteiligt sich aktiv</option>
+  <option>beteiligt sich engagiert</option>
+  <option>beteiligt sich interessiert</option>
+  <option>beteiligt sich überwiegend eigenaktiv</option>
+  <option>beteiligt sich zurückhaltend</option>
+  <option>beteiligt sich eher zurückhaltend</option>
+  <option>beteiligt sich gelegentlich</option>
+  <option>beteiligt sich nur punktuell</option>
+  <option>beteiligt sich interessenbezogen</option>
+  <option>beteiligt sich nur interessenbezogen</option>
+  <option>beteiligt sich zu stark interessenbezogen</option>
+  <option>beteiligt sich nur sporadisch</option>
+  <option>beteiligt sich kaum</option>
+  <option>beteiligt sich zu selten</option>
+  <option>beteiligt sich nicht</option>
+  <option>beteiligt sich nicht eigenaktiv</option>
+  <option>beteiligt sich nur nach Aufforderung</option>
+  <option>beteiligt sich widerwillig nur nach Aufforderung</option>
+  <option>beteiligt sich widerwillig</option>
+  <option>beteiligt sich auch nach Aufforderung nicht</option>
+</select>
+<label>Beitragsqualität:</label>
+<select id="mitQual">
+  <option value="">keine Angabe</option>
+  <option>passende Beiträge</option>
+  <option>sachlich richtige Beiträge</option>
+  <option>eigene Lösungsansätze</option>
+  <option>durchdachte Beiträge</option>
+  <option>wohl durchdachte Beiträge</option>
+  <option>weiterführende Gedanken</option>
+  <option>hilfreiche Beiträge</option>
+  <option>konstruktive Beiträge</option>
+  <option>einfache Beiträge</option>
+  <option>eigene Beiträge</option>
+  <option>Beiträge</option>
+</select>
+<label>Eigeninitiative?</label>
+<select id="mitEigen">
+  <option value="">keine Angabe</option>
+  <option>Hierbei wäre mehr Eigeninitiative wünschenswert</option>
+</select>
+<button class="add-button" onclick="pulseButton(this); gen2()">Text hinzufügen</button>
+
+</div>
+
+<!-- ================= BLOCK 3 ================= -->
+<div class="block-header" onclick="toggleBlock('b3','s3')"><span id="s3">+</span> 3. Arbeitsverhalten</div>
+<div class="block-content" id="b3" style="display:none;">
+<label>Häufigkeit:</label>
+<select id="freq3">
+  <option value="">keine Angabe</option>
+  <option>stets</option>
+  <option>immer</option>
+  <option>meist</option>
+  <option>häufig</option>
+  <option>oftmals</option>
+  <option>regelmäßig</option>
+  <option>gelegentlich</option>
+  <option>selten</option>
+  <option>kaum</option>
+  <option>nie</option>
+</select>
+<label>Anzahl Adjektive:</label>
+<select id="adjCount3" onchange="buildAdjBlock3()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+</select>
+<div id="adjBox3"></div>
+<button class="add-button" onclick="pulseButton(this); gen3()">Text hinzufügen</button>
+
+</div>
+
+<!-- ================= BLOCK 4 ================= -->
+<div class="block-header" onclick="toggleBlock('b4','s4')"><span id="s4">+</span> 4. Hausaufgaben</div>
+<div class="block-content" id="b4" style="display:none;">
+<label>Häufigkeit:</label>
+<select id="freq4">
+  <option value="">keine Angabe</option>
+  <option>stets</option>
+  <option>immer</option>
+  <option>meist</option>
+  <option>häufig</option>
+  <option>oftmals</option>
+  <option>regelmäßig</option>
+  <option>gelegentlich</option>
+  <option>selten</option>
+  <option>kaum</option>
+  <option>nie</option>
+</select>
+<label>Anzahl Adjektive:</label>
+<select id="adjCount4" onchange="buildAdjBlock4()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+</select>
+<div id="adjBox4"></div>
+<button class="add-button" onclick="pulseButton(this); gen4()">Text hinzufügen</button>
+
+</div>
+
+<!-- ================= BLOCK 5 ================= -->
+<div class="block-header" onclick="toggleBlock('b5','s5')"><span id="s5">+</span> 5. Gruppenarbeit</div>
+<div class="block-content" id="b5" style="display:none;">
+<label>Anzahl Gründe:</label>
+<select id="groupCount" onchange="buildGroupReasons()">
+  <option value="1">1</option>
+  <option value="2">2</option>
+</select>
+<div id="groupBox"></div>
+<button class="add-button" onclick="pulseButton(this); gen5()">Text hinzufügen</button>
+
+</div>
+
+<!-- ================= BLOCK 6 ================= -->
+<div class="block-header" onclick="toggleBlock('b6','s6')"><span id="s6">+</span> 6. Verhalten</div>
+<div class="block-content" id="b6" style="display:none;">
+<label>Verhalten:</label>
+<select id="behavior">
+  <option value="">keine Auswahl</option>
+  <option>vorbildlich</option>
+  <option>stets vorbildlich</option>
+  <option>lobenswert</option>
+  <option>stets lobenswert</option>
+  <option>angemessen</option>
+  <option>meist angemessen</option>
+  <option>nicht immer angemessen</option>
+  <option>anerkennenswert</option>
+  <option>sehr anerkennenswert</option>
+  <option>zufriedenstellend</option>
+  <option>ordentlich, nicht tadelfrei</option>
+</select>
+<button class="add-button" onclick="pulseButton(this); gen6()">Text hinzufügen</button>
+
+</div>
+
+</div>
+
+<div class="right">
+<div id="output"></div>
+<div class="button-row">
+  <button class="copy-btn" onclick="pulseButton(this); copyText()">Text kopieren</button>
+  <button class="delete-btn" onclick="pulseButton(this); clearText()">Textfeld Löschen</button>
+  <div class="button-row" style="margin-top:10px;">
+  <button id="undoBtn"
+    onclick="pulseButton(this); undoLast()"
+    style="background-color:#000002; color:white; border:none; cursor:pointer;"
+    disabled>
+    Letzte Eingabe rückgängig
+  </button>
+</div>
+  <button id="replaceBtn" onclick="pulseButton(this); markAndReplace()" style="background-color: orange; color: white;">Wortwiederholung 'UND' prüfen</button>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* undo */
+let textHistory = [];
+
+function undoLast(){
+  const out = document.getElementById("output");
+  if(textHistory.length === 0) return;
+
+  out.innerText = textHistory.pop();
+  updateUndoButton();
+}
+
+function updateUndoButton(){
+  const btn = document.getElementById("undoBtn");
+  if(!btn) return;
+  btn.disabled = textHistory.length === 0;
+  btn.style.opacity = btn.disabled ? "0.4" : "1";
+}
+
+
+/* ---------- TOGGLE ---------- */
+
+function toggleBlock(id){
+  document.querySelectorAll(".block-content").forEach(b=>{
+    b.classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+}
+
+function toggleBlock(id,s){
+  ["b1","b2","b3","b4","b5","b6"].forEach(b=>{
+    const el=document.getElementById(b);
+    if(el){el.style.display="none";}
+    const sp=document.getElementById("s"+b.slice(1));
+    if(sp){sp.textContent="+";}
+  });
+  document.getElementById(id).style.display="block";
+  document.getElementById(s).textContent="−";
+
+  // 🔹 NEU: Block 5 sofort initialisieren
+  if(id === "b5"){
+    buildGroupReasons();
+  }
+}
+
+/* pulsieren */
+function pulseButton(btn){
+  btn.classList.remove("pulse"); // wichtig bei schnellem Klicken
+  void btn.offsetWidth;          // reflow erzwingen
+  btn.classList.add("pulse");
+}
+
+/* ---------- TEXT ---------- */
+function addText(t){const out = document.getElementById("output");
+  // aktuellen Zustand merken
+  textHistory.push(out.innerText);
+  // Text anhängen (nur Leerzeichen, kein Absatz)
+  out.innerText += (out.innerText ? " " : "") + t;
+  updateUndoButton();
+}
+function copyText(){ navigator.clipboard.writeText(output.innerText); }
+function clearText(){ output.innerText=""; }
+
+/* undo platz richtig in cleartext??? */
+textHistory = [];
+updateUndoButton();
+
+let markStep = 0; // 0 = noch nicht gedrückt, 1 = markiert, 2 = korrigiert
+
+function markAndReplace(){
+    const outputEl = document.getElementById("output");
+    if(markStep === 0){
+        // Schritt 1: alle "und" markieren
+        const regex = /\bund\b/g;
+        outputEl.innerHTML = outputEl.innerText.replace(regex, '<span style="background-color: orange;">und</span>');
+        document.getElementById("replaceBtn").innerText = "Ändere jedes 2. 'UND' in 'SOWIE'";
+        markStep = 1;
+    } else if(markStep === 1){
+        // Schritt 2: jedes zweite "und" ersetzen
+        let text = outputEl.innerText;
+        let count = 0;
+        text = text.replace(/\bund\b/g, function(match){
+            count++;
+            return (count % 2 === 0) ? "sowie" : match;
+        });
+        outputEl.innerText = text; // HTML-Tags entfernen
+        // Button deaktivieren
+        const btn = document.getElementById("replaceBtn");
+        btn.disabled = true;
+        btn.style.backgroundColor = "#ccc";
+        btn.style.cursor = "not-allowed";
+        markStep = 2;
+    }
+}
+
+
+/* ---------- BLOCK 1 ---------- */
+const adjBlock1List=["ausgeglichen","besonnen","diskussionsfreudig","ehrgeizig","fleißig","freundlich","hilfsbereit","höflich","leistungswillig","lebhaft","nett","ruhig","selbstbewusst","selbstständig","strebsam","vielseitig interessiert","zuvorkommend"];
+function buildAdjBlock1(){
+  adjBox1.innerHTML="";
+  for(let i=0;i<+adjCount1.value;i++){
+    const s=document.createElement("select");
+    s.innerHTML="<option value=''>Adjektiv wählen</option>";
+    adjBlock1List.forEach(a=>s.innerHTML+=`<option>${a}</option>`);
+    s.onchange=()=>disableAdj(adjBox1);
+    adjBox1.appendChild(s);
+  }
+}
+function gen1(){
+  const n=studentName.value.trim();
+  if(!n) return alert("Name fehlt");
+  const g=gender.value;
+  const art=g==="w"?"eine":"ein";
+  const noun=g==="w"?"Schülerin":"Schüler";
+  const rel=g==="w"?"die":"der";
+  const raw=[...adjBox1.querySelectorAll("select")].map(s=>s.value).filter(Boolean);
+  const adj=raw.map(a=>g==="w"?a+"e":a+"er");
+  let a="";
+  if(adj.length===1)a=adj[0];
+  if(adj.length===2)a=adj[0]+" sowie "+adj[1];
+  if(adj.length===3)a=adj[0]+", "+adj[1]+" sowie "+adj[2];
+  addText(`${n} ist ${art} ${a?a+" ":""}${noun}, ${rel} ${attention.value}.`);
+}
+
+/* ---------- BLOCK 2 ---------- */
+function gen2(){
+  const p=gender.value==="w"?"Sie":"Er";
+  let s="";
+  if(mitForm.value||mitQual.value){
+    s=p+" "+mitForm.value;
+    if(mitForm.value&&mitQual.value)s+=" und ";
+    if(mitQual.value)s+="bringt "+mitQual.value+" ein";
+    s+=".";
+  }
+  if(mitEigen.value)s+=" "+mitEigen.value+".";
+  if(s)addText(s);
+}
+
+/* ---------- BLOCK 3 & 4 ---------- */
+const adjWork=["aktiv","aufmerksam","diszipliniert","effizient","engagiert","gewissenhaft","gründlich","interessiert","nachlässig","nicht zuverlässig","oberflächlich","ordentlich","pflichtbewusst","pünktlich","sorgfältig","selbstständig","strukturiert","umfassend","unordentlich","unvollständig","vollständig","vorbildlich","zuverlässig","zielstrebig","zögerlich","zügig"];
+function buildAdj(box,count,used=[]){
+  box.innerHTML="";
+  for(let i=0;i<+count.value;i++){
+    const s=document.createElement("select");
+    s.innerHTML="<option value=''>Adjektiv wählen</option>";
+    adjWork.forEach(a=>s.innerHTML+=`<option ${used.includes(a)?"disabled":""}>${a}</option>`);
+    s.onchange=()=>disableAdj(box);
+    box.appendChild(s);
+  }
+}
+function disableAdj(box){
+  const sels=[...box.querySelectorAll("select")];
+  const chosen=sels.map(s=>s.value).filter(Boolean);
+  sels.forEach(sel=>[...sel.options].forEach(o=>o.disabled=chosen.includes(o.value)&&o.value!==sel.value&&o.value));
+}
+function buildAdjBlock3(){ buildAdj(adjBox3,adjCount3); }
+function buildAdjBlock4(){ const used=[...adjBox3.querySelectorAll("select")].map(s=>s.value).filter(Boolean); buildAdj(adjBox4,adjCount4,used); }
+function gen3(){ const p=gender.value==="w"?"Ihr":"Ihm"; const adv=freq3.value; const raw=[...adjBox3.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${p} gestellte Arbeitsaufträge werden ${adv?adv+" ":""}${adj?adj+" ":""}ausgeführt.`:`${p} gestellte Arbeitsaufträge werden ausgeführt.`);}
+function gen4(){ const n=studentName.value.trim(); if(!n) return alert("Name fehlt"); const adv=freq4.value; const raw=[...adjBox4.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${n} erledigt die Hausaufgaben ${adv?adv+" ":""}${adj}.`:`${n} erledigt die Hausaufgaben.`);}
+
+/* ---------- BLOCK 5 ---------- */
+const groupReasons=["offenen Art","aufgeschlossenen Art","kommunikativen Art","hilfsbereiten Art","freundlichen Art","ruhigen Art","unaufgeregten Art","ausgeglichenen Persönlichkeit","konzentrierten Arbeitsweise","zielstrebigen Arbeitsweise","strukturierten Arbeitsweise","verlässlichen Arbeitsweise","kommunikativen Arbeitsweise","konstruktiven Arbeitsweise","ausdauernden Arbeitsweise","pflichtbewussten Arbeitsweise","kreativen Arbeitsweise","umfangreichen Wissens","sicheren Fachwissens"," Fähigkeit, Dinge offen anzusprechen","Fähigkeit, Inhalte verständlich zu erklären","verantwortungsbewussten Handelns"];
+function buildGroupReasons(){ groupBox.innerHTML=""; for(let i=0;i<+groupCount.value;i++){ const s=document.createElement("select"); s.innerHTML="<option value=''>Grund wählen</option>"; groupReasons.forEach(r=>s.innerHTML+=`<option>${r}</option>`); s.onchange=()=>disableAdj(groupBox); groupBox.appendChild(s); } }
+function gen5(){
+    const n = document.getElementById("studentName").value.trim();
+    if(!n) return alert("Name fehlt");
+    const g = document.getElementById("gender").value;
+    const pronoun = g === "w" ? "wird sie" : "wird er";  // er/sie
+    const partner = g === "w" ? "als Lernpartnerin" : "als Lernpartner";
+
+    // gewählte Optionen
+    const raw = [...groupBox.querySelectorAll("select")].map(s => s.value).filter(Boolean);
+    if(!raw.length) return;
+
+    let text = "Wegen ";
+    if(raw.length === 1){
+        // erste Option → Possessiv sein/ihr
+        const poss = g === "w" ? "ihrer" : "seiner";
+        text += `${poss} ${raw[0]} ${pronoun} ${partner} geschätzt.`;
+    } else {
+        // zwei Optionen → erste mit Possessiv, zweite nur mit Artikel
+        const poss = g === "w" ? "ihrer" : "seiner";
+        text += `${poss} ${raw[0]} und der ${raw[1]} ${pronoun} ${partner} geschätzt.`;
+    }
+
+    addText(text);
+}
+
+
+/* ---------- BLOCK 6 ---------- */
+function gen6(){ const n=document.getElementById("studentName").value.trim(); if(!n) return alert("Name fehlt"); const g=document.getElementById("gender").value; const rel=g==="w"?"der Schülerin":"des Schülers"; const val=document.getElementById("behavior").value; if(!val) return; addText(`Das Verhalten ${rel} gegenüber Lehrkräften und Mitschülern ist ${val}.`);}
+
+
+/* ---------- NEUER SCHÜLER BUTTON = ALLES ZURÜCKSETZEN ---------- */
+function resetAll(){
+
+ //undo BTN reset
+ textHistory = [];
+updateUndoButton();
+
+
+  // Name & Geschlecht
+  document.getElementById("studentName").value = "";
+  document.getElementById("gender").value = "m";
+
+  // Alle Selects zurücksetzen
+  document.querySelectorAll("select").forEach(sel=>{
+    sel.selectedIndex = 0;
+  });
+
+  // Textfeld leeren
+  document.getElementById("output").innerText = "";
+
+  // Alle Toggle-Blöcke schließen
+  ["b1","b2","b3","b4","b5","b6"].forEach(b=>{
+    const el = document.getElementById(b);
+    if(el) el.style.display = "none";
+    const sp = document.getElementById("s"+b.slice(1));
+    if(sp) sp.textContent = "+";
+  });
+
+  // Wortwiederholungs-Button zurücksetzen
+  if(typeof markStep !== "undefined"){
+    markStep = 0;
+    const btn = document.getElementById("replaceBtn");
+    if(btn){
+      btn.disabled = false;
+      btn.style.backgroundColor = "orange";
+      btn.style.cursor = "pointer";
+      btn.innerText = "Wortwiederholung prüfen";
+    }
+  }
+
+  // Block 1 wieder automatisch öffnen (UX!)
+  toggleBlock("b1","s1");
+}
+let resetStep = 0;
+
+function confirmReset(){
+  const btn = document.getElementById("resetAllBtn");
+
+  if(resetStep === 0){
+    // Schritt 1: Nachfrage
+    btn.innerText = "SICHER?";
+    btn.style.backgroundColor = "#c0392b"; // rot
+    resetStep = 1;
+  } else {
+    // Schritt 2: wirklich zurücksetzen
+    resetAll();
+
+    // Button zurücksetzen
+    btn.innerText = "Neuer Schüler = Alle Eingaben löschen";
+    btn.style.backgroundColor = "#8e44ad"; // lila
+    resetStep = 0;
+  }
+}
+
+resetStep = 0;
+const resetBtn = document.getElementById("resetAllBtn");
+if(resetBtn){
+  resetBtn.innerText = "Neuer Schüler = Alle Eingaben löschen";
+  resetBtn.style.backgroundColor = "#8e44ad";
+}
+
+
+
+</script>
+</body>
+</html>
