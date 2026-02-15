@@ -175,7 +175,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option value="dem Unterricht meist konzentriert folgt">dem Unterricht meist konzentriert folgt</option>
   <option value="dem Unterricht nicht immer konzentriert folgt">dem Unterricht nicht immer konzentriert folgt</option>
 </select>
-<button class="add-button" onclick="pulseButton(this); gen1()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen1)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -227,7 +231,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option value="">keine Angabe</option>
   <option>Hierbei wäre mehr Eigeninitiative wünschenswert</option>
 </select>
-<button class="add-button" onclick="pulseButton(this); gen2()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen2)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -255,7 +263,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option value="2">2</option>
 </select>
 <div id="adjBox3"></div>
-<button class="add-button" onclick="pulseButton(this); gen3()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen3)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -283,7 +295,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option value="2">2</option>
 </select>
 <div id="adjBox4"></div>
-<button class="add-button" onclick="pulseButton(this); gen4()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen4)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -296,7 +312,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option value="2">2</option>
 </select>
 <div id="groupBox"></div>
-<button class="add-button" onclick="pulseButton(this); gen5()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen5)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -319,7 +339,11 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option>ordentlich</option>
   <option>nicht tadelfrei</option>
 </select>
-<button class="add-button" onclick="pulseButton(this); gen6()">Text hinzufügen</button>
+<button class="add-button"
+onclick="pulseButton(this); secureAction(gen6)">
+Text hinzufügen
+</button>
+
 
 </div>
 
@@ -615,6 +639,47 @@ if(resetBtn){
 </script>
 
 <script type="module">
+
+// ZENTRALE SCHUTZFUNKTION
+async function secureAction(actionFunction){
+
+  try{
+
+    // aktuelle Version von Firebase holen
+    const snap =
+      await getDoc(doc(db,"config","login"));
+
+    const firebaseVersion =
+      snap.data().version;
+
+    const localVersion =
+      localStorage.getItem("zeugnisVersion");
+
+    // Version stimmt nicht → Logout erzwingen
+    if(firebaseVersion != localVersion){
+
+      sessionStorage.removeItem("zeugnisLogin");
+
+      alert("Neue Version verfügbar. Bitte neu einloggen.");
+
+      location.reload();
+
+      return;
+
+    }
+
+    // Version OK → eigentliche Funktion ausführen
+    actionFunction();
+
+  }
+  catch(e){
+
+    alert("Internetverbindung erforderlich.");
+
+  }
+
+}
+// Schutzfuntkion Ende
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
