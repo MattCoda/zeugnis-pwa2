@@ -640,12 +640,12 @@ if(resetBtn){
 
 <script type="module">
 
+
 // ZENTRALE SCHUTZFUNKTION
-async function secureAction(actionFunction){
+window.secureAction = async function(actionFunction){
 
   try{
 
-    // aktuelle Version von Firebase holen
     const snap =
       await getDoc(doc(db,"config","login"));
 
@@ -655,7 +655,6 @@ async function secureAction(actionFunction){
     const localVersion =
       localStorage.getItem("zeugnisVersion");
 
-    // Version stimmt nicht → Logout erzwingen
     if(firebaseVersion != localVersion){
 
       sessionStorage.removeItem("zeugnisLogin");
@@ -668,7 +667,7 @@ async function secureAction(actionFunction){
 
     }
 
-    // Version OK → eigentliche Funktion ausführen
+    // Wichtig: hier wird die echte Funktion ausgeführt
     actionFunction();
 
   }
@@ -679,6 +678,7 @@ async function secureAction(actionFunction){
   }
 
 }
+
 // Schutzfuntkion Ende
 
 import { initializeApp }
