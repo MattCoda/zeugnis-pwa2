@@ -74,6 +74,54 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
 </head>
 <body>
 
+  <div id="loginScreen" style="
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  ">
+
+  <h1>Zwischenzeugnisgenerator = Verben alle im Präsens</h1>
+
+  <h2>
+  created & engineered mostly by ChatGPT and ideas came from Mr Pre from RSNEC
+  </h2>
+
+  <div style="width:320px; margin-top:25px;">
+
+  <input type="password"
+  id="passwordInput"
+  placeholder="Passwort eingeben"
+  style="padding:10px; font-size:16px; width:100%;">
+
+  <button onclick="login()"
+  style="
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  background-color:#4CAF50;
+  color:white;
+  border:none;
+  cursor:pointer;
+  font-size:16px;">
+  Login
+  </button>
+
+  <p id="loginError" style="color:red; text-align:center;"></p>
+
+  </div>
+
+  </div>
+
+  <div id="mainApp" style="display:none;">
+
 <h1>Zwischenzeugnisgenerator = Verben alle im Präsens</h1>
 <h2>created & engineered mostly by ChatGPT and ideas came from Mr Pre from RSNEC</h2>
 
@@ -163,7 +211,7 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
 <select id="mitQual">
   <option value="">keine Angabe</option>
   <option>passende Beiträge</option>
-  <option>sachlich richtige Beiträge</option>
+  <option>angemessene Beiträge</option>
   <option>eigene Lösungsansätze</option>
   <option>durchdachte Beiträge</option>
   <option>wohl durchdachte Beiträge</option>
@@ -268,7 +316,8 @@ select, input, button { width: 100%; padding: 6px; margin-bottom: 10px; }
   <option>anerkennenswert</option>
   <option>sehr anerkennenswert</option>
   <option>zufriedenstellend</option>
-  <option>ordentlich, nicht tadelfrei</option>
+  <option>ordentlich</option>
+  <option>nicht tadelfrei</option>
 </select>
 <button class="add-button" onclick="pulseButton(this); gen6()">Text hinzufügen</button>
 
@@ -436,7 +485,7 @@ function gen2(){
 }
 
 /* ---------- BLOCK 3 & 4 ---------- */
-const adjWork=["aktiv","aufmerksam","diszipliniert","effizient","engagiert","gewissenhaft","gründlich","interessiert","nachlässig","nicht zuverlässig","oberflächlich","ordentlich","pflichtbewusst","pünktlich","sorgfältig","selbstständig","strukturiert","umfassend","unordentlich","unvollständig","vollständig","vorbildlich","zuverlässig","zielstrebig","zögerlich","zügig"];
+const adjWork=["aktiv","aufmerksam","effizient","engagiert","gewissenhaft","gründlich","interessiert","nachlässig","nicht zuverlässig","oberflächlich","ordentlich","pflichtbewusst","pünktlich","sorgfältig","selbstständig","strukturiert","umfassend","unordentlich","unvollständig","vollständig","vorbildlich","zuverlässig","zielstrebig","zögerlich","zügig"];
 function buildAdj(box,count,used=[]){
   box.innerHTML="";
   for(let i=0;i<+count.value;i++){
@@ -458,7 +507,7 @@ function gen3(){ const p=gender.value==="w"?"Ihr":"Ihm"; const adv=freq3.value; 
 function gen4(){ const n=studentName.value.trim(); if(!n) return alert("Name fehlt"); const adv=freq4.value; const raw=[...adjBox4.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${n} erledigt die Hausaufgaben ${adv?adv+" ":""}${adj}.`:`${n} erledigt die Hausaufgaben.`);}
 
 /* ---------- BLOCK 5 ---------- */
-const groupReasons=["offenen Art","aufgeschlossenen Art","kommunikativen Art","hilfsbereiten Art","freundlichen Art","ruhigen Art","unaufgeregten Art","ausgeglichenen Persönlichkeit","konzentrierten Arbeitsweise","zielstrebigen Arbeitsweise","strukturierten Arbeitsweise","verlässlichen Arbeitsweise","kommunikativen Arbeitsweise","konstruktiven Arbeitsweise","ausdauernden Arbeitsweise","pflichtbewussten Arbeitsweise","kreativen Arbeitsweise","umfangreichen Wissens","sicheren Fachwissens"," Fähigkeit, Dinge offen anzusprechen","Fähigkeit, Inhalte verständlich zu erklären","verantwortungsbewussten Handelns"];
+const groupReasons=["offenen Art","aufgeschlossenen Art","kommunikativen Art","hilfsbereiten Art","freundlichen Art","ruhigen Art","ausgeglichenen Persönlichkeit","konzentrierten Arbeitsweise","zielstrebigen Arbeitsweise","strukturierten Arbeitsweise","verlässlichen Arbeitsweise","kommunikativen Arbeitsweise","konstruktiven Arbeitsweise","ausdauernden Arbeitsweise","pflichtbewussten Arbeitsweise","kreativen Arbeitsweise","Fähigkeit, andere Meinungen zu respektieren","Fähigkeit, seine Meinung nachvollziehbar zu verteten","Fähigkeit, Inhalte verständlich zu erklären",];
 function buildGroupReasons(){ groupBox.innerHTML=""; for(let i=0;i<+groupCount.value;i++){ const s=document.createElement("select"); s.innerHTML="<option value=''>Grund wählen</option>"; groupReasons.forEach(r=>s.innerHTML+=`<option>${r}</option>`); s.onchange=()=>disableAdj(groupBox); groupBox.appendChild(s); } }
 function gen5(){
     const n = document.getElementById("studentName").value.trim();
@@ -471,7 +520,7 @@ function gen5(){
     const raw = [...groupBox.querySelectorAll("select")].map(s => s.value).filter(Boolean);
     if(!raw.length) return;
 
-    let text = "Wegen ";
+    let text = "Aufgrund ";
     if(raw.length === 1){
         // erste Option → Possessiv sein/ihr
         const poss = g === "w" ? "ihrer" : "seiner";
@@ -564,5 +613,116 @@ if(resetBtn){
 
 
 </script>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyCuQCpuiCvAiQ9Qvlf6K1UG1HmA_-qd1e4",
+authDomain: "redlinevokabeltrainernr1.firebaseapp.com",
+projectId: "redlinevokabeltrainernr1",
+storageBucket: "redlinevokabeltrainernr1.firebasestorage.app",
+messagingSenderId: "505004267790",
+appId: "1:505004267790:web:64847ac064ba993d369f5f"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+
+// SHA256 Funktion
+async function sha256(text){
+
+const buffer =
+await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(text)
+);
+
+return Array.from(new Uint8Array(buffer))
+.map(b => b.toString(16).padStart(2,"0"))
+.join("");
+
+}
+
+
+// LOGIN
+window.login = async function(){
+
+const input =
+document.getElementById("passwordInput").value;
+
+if(!input){
+
+document.getElementById("loginError").innerText =
+"Bitte Passwort eingeben";
+
+return;
+
+}
+
+try{
+
+const hash = await sha256(input);
+
+const snap =
+await getDoc(doc(db,"config","login"));
+
+const correctHash =
+snap.data().passwordHash;
+
+if(hash === correctHash){
+
+document.getElementById("loginScreen").style.display="none";
+
+document.getElementById("mainApp").style.display="block";
+
+sessionStorage.setItem("zeugnisLogin","ok");
+
+}
+else{
+
+document.getElementById("loginError").innerText =
+"Falsches Passwort";
+
+}
+
+}
+catch(e){
+
+document.getElementById("loginError").innerText =
+"Verbindungsfehler zu Firebase";
+
+}
+
+};
+
+
+// Auto Login
+if(sessionStorage.getItem("zeugnisLogin")==="ok"){
+
+document.getElementById("loginScreen").style.display="none";
+
+document.getElementById("mainApp").style.display="block";
+
+}
+
+</script>
+
 </body>
+
+</div>
+
 </html>
