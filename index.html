@@ -527,8 +527,8 @@ function disableAdj(box){
 }
 function buildAdjBlock3(){ buildAdj(adjBox3,adjCount3); }
 function buildAdjBlock4(){ const used=[...adjBox3.querySelectorAll("select")].map(s=>s.value).filter(Boolean); buildAdj(adjBox4,adjCount4,used); }
-function gen3(){ const p=gender.value==="w"?"Ihr":"Ihm"; const adv=freq3.value; const raw=[...adjBox3.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${p} gestellte Arbeitsaufträge werden ${adv?adv+" ":""}${adj?adj+" ":""}ausgeführt.`:`${p} gestellte Arbeitsaufträge werden ausgeführt.`);}
-function gen4(){ const n=studentName.value.trim(); if(!n) return alert("Name fehlt"); const adv=freq4.value; const raw=[...adjBox4.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${n} erledigt die Hausaufgaben ${adv?adv+" ":""}${adj}.`:`${n} erledigt die Hausaufgaben.`);}
+function gen3(){ const p=gender.value==="w"?"Ihr":"Ihm"; const adv=freq3.value; const raw=[...adjBox3.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${p} gestellte Aufgaben werden ${adv?adv+" ":""}${adj?adj+" ":""}ausgeführt.`:`${p} gestellte Aufgaben werden ausgeführt.`);}
+function gen4(){ const n=studentName.value.trim(); if(!n) return alert("Name fehlt"); const adv=freq4.value; const raw=[...adjBox4.querySelectorAll("select")].map(s=>s.value).filter(Boolean); let adj=""; if(raw.length===1)adj=raw[0]; if(raw.length===2)adj=raw[0]+" und "+raw[1]; addText(adj||adv?`${n} erledigt die häusliche Unterrichtsvorbereitung ${adv?adv+" ":""}${adj}.`:`${n} erledigt die häusliche Unterrichtsvorbereitung.`);}
 
 /* ---------- BLOCK 5 ---------- */
 const groupReasons=["offenen Art","aufgeschlossenen Art","kommunikativen Art","hilfsbereiten Art","freundlichen Art","ruhigen Art","ausgeglichenen Persönlichkeit","konzentrierten Arbeitsweise","zielstrebigen Arbeitsweise","strukturierten Arbeitsweise","verlässlichen Arbeitsweise","kommunikativen Arbeitsweise","konstruktiven Arbeitsweise","ausdauernden Arbeitsweise","pflichtbewussten Arbeitsweise","kreativen Arbeitsweise","Fähigkeit, andere Meinungen zu respektieren","Fähigkeit, seine Meinung nachvollziehbar zu verteten","Fähigkeit, Inhalte verständlich zu erklären",];
@@ -538,7 +538,7 @@ function gen5(){
     if(!n) return alert("Name fehlt");
     const g = document.getElementById("gender").value;
     const pronoun = g === "w" ? "wird sie" : "wird er";  // er/sie
-    const partner = g === "w" ? "als Lernpartnerin" : "als Lernpartner";
+    const partner = g === "w" ? "als Lernpartnerin im Team" : "als Lernpartner im Team";
 
     // gewählte Optionen
     const raw = [...groupBox.querySelectorAll("select")].map(s => s.value).filter(Boolean);
